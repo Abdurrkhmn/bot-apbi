@@ -43,7 +43,7 @@ def ambil_data_sheets():
 def welcome(message):
     pesan = (
         "🌟 **Bot Beasiswa APBI**\n\n"
-        "Tulis beasiswa atau negara yang kamu cari.\n"
+        "Tulis beasiswa atau negara yang pian/kamu cari.\n"
         "Contoh: 'Jepang' atau 'LPDP'\n\n"
         "Limit gratis: 5 pertanyaan/hari."
     )
@@ -58,7 +58,7 @@ def handle_all(message):
     user_usage[user_id] = user_usage.get(user_id, 0) + 1
     if user_usage[user_id] > 5:
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("🔓 Buka Akses Unlimited", url="https://saweria.co/apbi"))
+        markup.add(types.InlineKeyboardButton("🔓 Buka Akses Unlimited", url="https://www.instagram.com/apbiinternasional/"))
         bot.reply_to(message, "⚠️ **Limit Tercapai!**\nUntuk lanjut mencari & konsultasi, silakan aktivasi Premium.", reply_markup=markup)
         return
 
@@ -90,7 +90,7 @@ def handle_all(message):
 
     # 4. CTA MENTORING (STRATEGI BISNIS: KONVERSI)
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("💎 Daftar Mentoring (Berbayar)", url="https://wa.me/628123456789"))
+    markup.add(types.InlineKeyboardButton("💎 Daftar Mentoring (Berbayar)", url="https://wa.me/6285821854972"))
     
     bot.reply_to(message, pesan_hasil, reply_markup=markup, parse_mode="Markdown")
 
