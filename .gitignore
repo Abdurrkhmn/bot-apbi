@@ -1,5 +1,3 @@
 venv/
 .env
 __pycache__/
-TOKEN_TELEGRAM = os.getenv('TOKEN_TELEGRAM', '8613320694:AAGt5OXlwu632uLM-wjcOoT-DI8-hAPYL60')
-API_KEY_GEMINI = os.getenv('API_KEY_GEMINI', 'AIzaSyCois6xAZxXhS7pcLVO4iZ_Qm-OHfdRFEY')
