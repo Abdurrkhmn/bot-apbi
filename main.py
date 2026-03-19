@@ -42,10 +42,10 @@ def ambil_data_sheets():
 @bot.message_handler(commands=['start'])
 def welcome(message):
     pesan = (
-        "🌟 **Bot Beasiswa APBI**\n\n"
-        "Tulis beasiswa atau negara yang pian/kamu cari.\n"
+        "🌟 **Asisten Pintar Beasiswa APBI**\n\n"
+        "Tulis beasiswa atau negara nang pian cari.\n"
         "Contoh: 'Jepang' atau 'LPDP'\n\n"
-        "Limit gratis: 5 pertanyaan/hari."
+        "🎁Limit gratis: 5 pertanyaan/hari."
     )
     bot.reply_to(message, pesan, parse_mode="Markdown")
 
