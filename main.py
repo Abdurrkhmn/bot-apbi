@@ -6,9 +6,10 @@ import os  # Tambahan untuk membaca sistem keamanan
 from io import StringIO
 from telebot import types
 
-# --- KONFIGURASI AMAN (PRO LEVEL) ---
-# Bot akan mengambil TOKEN dan API KEY dari "Variables" Railway.
-# Jika tidak ada (misal di laptop), dia akan pakai nilai default di bawah.
+# --- KONFIGURASI AMAN ---
+# Hapus semua angka token, biarkan seperti ini:
+TOKEN_TELEGRAM = os.getenv('TOKEN_TELEGRAM')
+API_KEY_GEMINI = os.getenv('API_KEY_GEMINI')
 SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSDjdSSIYNX8l2gEsyHZrghM4I7eNeGvO3yj8_oH8aJONArO-KSNBs0iund2rEJp6nPFpk5lv58Tbtz/pub?output=csv'
 
 # Inisialisasi
