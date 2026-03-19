@@ -2,21 +2,26 @@ import telebot
 import google.generativeai as genai
 import pandas as pd
 import requests
-import os  # Tambahan untuk membaca sistem keamanan
+import os  # Digunakan untuk membaca Variables dari server
 from io import StringIO
 from telebot import types
 
-# --- KONFIGURASI AMAN ---
-# Hapus semua angka token, biarkan seperti ini:
+# --- KONFIGURASI AMAN (STANDAR INDUSTRI) ---
+# Kode ini tidak menyimpan angka token secara langsung. 
+# Server (Railway/Koyeb) akan mengisi nilai ini secara otomatis.
 TOKEN_TELEGRAM = os.getenv('TOKEN_TELEGRAM')
 API_KEY_GEMINI = os.getenv('API_KEY_GEMINI')
 SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSDjdSSIYNX8l2gEsyHZrghM4I7eNeGvO3yj8_oH8aJONArO-KSNBs0iund2rEJp6nPFpk5lv58Tbtz/pub?output=csv'
 
-# Inisialisasi
+# Inisialisasi Bot dan AI
+# Jika TOKEN atau API_KEY kosong, bot akan memberikan peringatan di log server
+if not TOKEN_TELEGRAM or not API_KEY_GEMINI:
+    print("❌ ERROR: TOKEN_TELEGRAM atau API_KEY_GEMINI belum diisi di Variables server!")
+
 bot = telebot.TeleBot(TOKEN_TELEGRAM)
 genai.configure(api_key=API_KEY_GEMINI)
 
-# Pilih Model Gemini
+# Pilih Model Gemini (Flash 1.5 lebih cepat dan murah)
 try:
     model = genai.GenerativeModel('gemini-1.5-flash')
 except:
@@ -30,7 +35,8 @@ def ambil_data_sheets():
         response = requests.get(SHEET_CSV_URL)
         df = pd.read_csv(StringIO(response.text))
         return df
-    except:
+    except Exception as e:
+        print(f"❌ Error ambil data Sheets: {e}")
         return None
 
 @bot.message_handler(commands=['start'])
@@ -48,7 +54,7 @@ def handle_all(message):
     user_id = message.from_user.id
     query = message.text.lower()
 
-    # 1. CEK LIMIT
+    # 1. CEK LIMIT (STRATEGI BISNIS: PEMBATASAN)
     user_usage[user_id] = user_usage.get(user_id, 0) + 1
     if user_usage[user_id] > 5:
         markup = types.InlineKeyboardMarkup()
@@ -56,12 +62,13 @@ def handle_all(message):
         bot.reply_to(message, "⚠️ **Limit Tercapai!**\nUntuk lanjut mencari & konsultasi, silakan aktivasi Premium.", reply_markup=markup)
         return
 
-    # 2. CARI DI GOOGLE SHEETS
+    # 2. CARI DI GOOGLE SHEETS (DATA UTAMA APBI)
     df = ambil_data_sheets()
     found = False
     pesan_hasil = ""
 
     if df is not None:
+        # Mencari keyword di seluruh kolom secara cerdas
         mask = df.apply(lambda row: row.astype(str).str.contains(query, case=False).any(), axis=1)
         results = df[mask]
         
@@ -69,22 +76,24 @@ def handle_all(message):
             found = True
             pesan_hasil = "✅ **Data Ditemukan di APBI:**\n\n"
             for _, row in results.head(3).iterrows():
-                pesan_hasil += f"🎓 *{row['Nama_Beasiswa']}*\n📍 {row['Negara']} | ⏳ {row['Deadline']}\n🔗 [Klik Info]({row['Link_Info']})\n\n"
+                # Pastikan nama kolom di Google Sheets kamu sesuai (Nama_Beasiswa, Negara, Deadline, Link_Info)
+                pesan_hasil += f"🎓 *{row.get('Nama_Beasiswa', 'Beasiswa')}*\n📍 {row.get('Negara', '-')} | ⏳ {row.get('Deadline', '-')}\n🔗 [Klik Info]({row.get('Link_Info', '#')})\n\n"
 
-    # 3. JIKA TIDAK ADA DI SHEETS, TANYA AI
+    # 3. JIKA TIDAK ADA DI SHEETS, GUNAKAN AI (BACKUP)
     if not found:
         try:
             bot.send_chat_action(message.chat.id, 'typing')
             response = model.generate_content(f"Berikan info singkat beasiswa {query} dan sarankan mentoring di APBI.")
             pesan_hasil = f"🔍 **Info AI:**\n\n{response.text}"
         except Exception as e:
-            pesan_hasil = "❌ AI sedang sibuk. Coba cari kata kunci lain."
+            pesan_hasil = "❌ AI sedang sibuk. Coba cari kata kunci lain atau hubungi admin."
 
-    # 4. CTA MENTORING (BISNIS KONVERSI)
+    # 4. CTA MENTORING (STRATEGI BISNIS: KONVERSI)
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("💎 Daftar Mentoring (Berbayar)", url="https://wa.me/628123456789"))
     
     bot.reply_to(message, pesan_hasil, reply_markup=markup, parse_mode="Markdown")
 
+# Jalankan Bot
 print("🚀 Bot APBI Berjalan Aman & Autopilot...")
-bot.polling()
+bot.polling(none_stop=True)
