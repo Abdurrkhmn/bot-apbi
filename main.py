@@ -97,3 +97,8 @@ def handle_all(message):
 # Jalankan Bot
 print("🚀 Bot APBI Berjalan Aman & Autopilot...")
 bot.polling(none_stop=True)
+
+
+
+
+
