@@ -99,7 +99,7 @@ def handle_all(message):
 
     # 4. CTA MENTORING (STRATEGI BISNIS: KONVERSI)
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("💎 Daftar Mentoring (Berbayar)", url="mailto:apbiinternasional@gmail.com"))
+    markup.add(types.InlineKeyboardButton("💎 Daftar Mentoring (Berbayar)", url="https://www.instagram.com/apbiinternasional/"))
     
     bot.reply_to(message, pesan_hasil, reply_markup=markup, parse_mode="Markdown")
 
