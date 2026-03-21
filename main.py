@@ -76,8 +76,17 @@ def handle_all(message):
             found = True
             pesan_hasil = "✅ **Data Ditemukan di APBI:**\n\n"
             for _, row in results.head(3).iterrows():
+                # MENAMBAHKAN INFORMASI KATEGORI DAN STATUS DARI SHEETS
+                kategori = row.get('Kategori', '-')
+                status = str(row.get('Status', '-')).upper()
+                
                 # Pastikan nama kolom di Google Sheets kamu sesuai (Nama_Beasiswa, Negara, Deadline, Link_Info)
-                pesan_hasil += f"🎓 *{row.get('Nama_Beasiswa', 'Beasiswa')}*\n📍 {row.get('Negara', '-')} | ⏳ {row.get('Deadline', '-')}\n🔗 [Klik Info]({row.get('Link_Info', '#')})\n\n"
+                pesan_hasil += (
+                    f"🎓 *{row.get('Nama_Beasiswa', 'Beasiswa')}*\n"
+                    f"📍 {row.get('Negara', '-')} | 💰 {kategori}\n"
+                    f"⏳ {row.get('Deadline', '-')} | 📢 {status}\n"
+                    f"🔗 [Klik Info Detail]({row.get('Link_Info', '#')})\n\n"
+                )
 
     # 3. JIKA TIDAK ADA DI SHEETS, GUNAKAN AI (BACKUP)
     if not found:
@@ -97,8 +106,3 @@ def handle_all(message):
 # Jalankan Bot
 print("🚀 Bot APBI Berjalan Aman & Autopilot...")
 bot.polling(none_stop=True)
-
-
-
-
-
